@@ -1,0 +1,137 @@
+diff -ruN modsearch_pristine/modsearchAI-main/dsh/client.js modsearch_work/modsearchAI-main/dsh/client.js
+--- a/dsh/client.js
++++ b/dsh/client.js
+@@ -991,6 +991,14 @@
+               t.section,
+             ),
+             body,
++            h('a', {
++              href: '/modsearch/traffic',
++              target: '_blank',
++              rel: 'noreferrer',
++              style: { display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '16px', padding: '9px 12px', border: '1px solid var(--dsw-alias-border-l2, rgba(127,127,127,0.35))', borderRadius: '9px', color: 'var(--dsw-alias-label-primary, inherit)', textDecoration: 'none', fontSize: '13px' },
++            },
++              '◉  实时流量监控 · 数据浏览 ↗',
++            ),
+           );
+         }
+ 
+diff -ruN modsearch_pristine/modsearchAI-main/dsh/index.js modsearch_work/modsearchAI-main/dsh/index.js
+--- a/dsh/index.js
++++ b/dsh/index.js
+@@ -87,6 +87,7 @@
+     ctx.inject(['webServer'], (scope) => {
+       try {
+         registerConfigRoute(scope);
++        registerTrafficRoute(scope);
+       } catch (error) {
+         console.error(`[modsearch] settings card route skipped: ${error}`);
+       }
+@@ -960,6 +961,44 @@
+   ctx.effect(() => ctx.webServer.register(route), 'modsearch: settings route');
+ }
+ 
++/** A small live dashboard backed by measured API payload counters. */
++function registerTrafficRoute(ctx) {
++  const file = join(homedir(), '.modsearch', 'traffic.json');
++  const route = {
++    name: 'modsearch-traffic', kind: 'exact', path: '/modsearch/traffic',
++    handler: async (req, res) => {
++      if (req.method !== 'GET') { res.writeHead(405).end(); return; }
++      const url = new URL(req.url, 'http://localhost');
++      if (url.searchParams.has('data')) {
++        let store = { version: 1, entries: [] };
++        try { store = JSON.parse(readFileSync(file, 'utf8')); } catch {}
++        res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
++        res.end(JSON.stringify(store));
++        return;
++      }
++      const html = `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ModSearch 流量监控</title>
++<style>
++*{box-sizing:border-box}body{margin:0;background:#080b12;color:#e8eef9;font:14px system-ui,-apple-system,sans-serif;padding:24px}main{max-width:1200px;margin:auto}header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px}h1{font-size:22px;margin:0}.muted{color:#8c9ab1}.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.card{background:#111827;border:1px solid #253149;border-radius:14px;padding:18px}.value{font-size:26px;font-weight:700;margin-top:8px}.chart{height:240px;margin-top:14px}.chart svg{width:100%;height:100%}table{width:100%;border-collapse:collapse;margin-top:12px}td,th{text-align:left;padding:11px;border-bottom:1px solid #253149}.ok{color:#46dc91}.bad{color:#ff7474}.pill{border:1px solid #2c3b55;border-radius:20px;padding:6px 10px}.note{margin-top:18px;color:#91a0b8;font-size:12px}@media(max-width:760px){body{padding:14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.value{font-size:21px}}
++</style><main><header><div><h1>◉ ModSearch · 网络流量监控</h1><div class="muted">实时 API 数据传输与历史记录</div></div><span class="pill" id="live">● 正在连接</span></header>
++<section class="grid"><div class="card"><div class="muted">累计上传</div><div class="value" id="up">—</div></div><div class="card"><div class="muted">累计下载</div><div class="value" id="down">—</div></div><div class="card"><div class="muted">API 请求次数</div><div class="value" id="calls">—</div></div><div class="card"><div class="muted">成功率</div><div class="value" id="rate">—</div></div></section>
++<section class="card" style="margin-top:14px"><b>最近 30 次请求 · 下载字节</b><div class="chart"><svg id="chart" viewBox="0 0 900 220" preserveAspectRatio="none"></svg></div></section>
++<section class="card" style="margin-top:14px"><b>引擎流量明细</b><table><thead><tr><th>API / 引擎</th><th>请求数</th><th>上传</th><th>下载</th><th>成功率</th></tr></thead><tbody id="engines"></tbody></table></section>
++<section class="card" style="margin-top:14px"><b>最近请求记录</b><table><thead><tr><th>时间</th><th>引擎</th><th>上传</th><th>下载</th><th>HTTP</th><th>结果</th></tr></thead><tbody id="recent"></tbody></table></section>
++<p class="note">统计口径：应用层请求/响应 payload 字节数，不包含 TCP/TLS/HTTP 协议头等链路开销。独立外部进程的系统级网络流量尚未采集；不会用进程输出字节数冒充网络流量。</p></main>
++<script>
++const fmt=n=>{n=Number(n)||0;return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(2)+' MB'};
++async function refresh(){try{const r=await fetch('/modsearch/traffic?data=1',{cache:'no-store'});if(!r.ok)throw Error(r.status);const d=await r.json(),a=d.entries||[],up=a.reduce((s,x)=>s+x.uploadBytes,0),down=a.reduce((s,x)=>s+x.downloadBytes,0),ok=a.filter(x=>x.ok).length;$('up').textContent=fmt(up);$('down').textContent=fmt(down);$('calls').textContent=a.length;$('rate').textContent=(a.length?ok/a.length*100:0).toFixed(1)+'%';$('live').textContent='● 实时更新 · '+new Date().toLocaleTimeString();const groups={};for(const x of a){const g=groups[x.engine]??(groups[x.engine]={n:0,u:0,d:0,ok:0});g.n++;g.u+=x.uploadBytes;g.d+=x.downloadBytes;if(x.ok)g.ok++}$('engines').innerHTML=Object.entries(groups).map(([k,v])=>'<tr><td>'+esc(k)+'</td><td>'+v.n+'</td><td>'+fmt(v.u)+'</td><td>'+fmt(v.d)+'</td><td>'+(v.ok/v.n*100).toFixed(1)+'%</td></tr>').join('')||'<tr><td colspan="5">暂无请求数据</td></tr>';$('recent').innerHTML=a.slice(-20).reverse().map(x=>'<tr><td>'+new Date(x.at).toLocaleString()+'</td><td>'+esc(x.engine)+'</td><td>'+fmt(x.uploadBytes)+'</td><td>'+fmt(x.downloadBytes)+'</td><td>'+(x.status??'—')+'</td><td class="'+(x.ok?'ok':'bad')+'">'+(x.ok?'成功':'失败')+'</td></tr>').join('')||'<tr><td colspan="6">暂无记录</td></tr>';const vals=a.slice(-30).map(x=>x.downloadBytes),max=Math.max(1,...vals),pts=vals.map((v,i)=>(vals.length<2?450:i*900/(vals.length-1))+','+(205-v/max*185)).join(' ');$('chart').innerHTML='<polyline points="'+pts+'" fill="none" stroke="#27d98b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>'; }catch(e){$('live').textContent='● 连接失败 · '+e.message}}
++function $(id){return document.getElementById(id)}function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}refresh();setInterval(refresh,2000);
++</script></html>`;
++      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
++      res.end(html);
++    },
++  };
++  ctx.effect(() => ctx.webServer.register(route), 'modsearch: traffic dashboard route');
++}
++
+ // The half of the settings card that lives on this side of the socket,
+ // reachable from the test suite the way client.js exposes __card. It reads
+ // and writes a real file and a real environment, so it is tested against both
+diff -ruN modsearch_pristine/modsearchAI-main/src/util/timedRequest.ts modsearch_work/modsearchAI-main/src/util/timedRequest.ts
+--- a/src/util/timedRequest.ts
++++ b/src/util/timedRequest.ts
+@@ -2,6 +2,7 @@
+ import { formatErrorWithCause } from './errorCause.ts';
+ import { resolveProxyForUrl } from './proxy.ts';
+ import { redactSecrets } from './redact.ts';
++import { recordTraffic } from './traffic.ts';
+@@ -44,6 +45,9 @@
+   const dispatcher = proxyUrl
+     ? new EnvHttpProxyAgent({ httpProxy: proxyUrl, httpsProxy: proxyUrl, noProxy: '' })
+     : undefined;
++  const startedAt = Date.now();
++  const requestBytes = Buffer.byteLength(url) + Buffer.byteLength(JSON.stringify(init.headers ?? {})) + (typeof init.body === 'string' ? Buffer.byteLength(init.body) : 0);
++  let recorded = false;
+@@ -58,7 +62,10 @@
+       throw fail(error);
+     }
+     try {
+-      return { response, text: await response.text() };
++      const text = await response.text();
++      recordTraffic({ at: new Date().toISOString(), engine: label, uploadBytes: requestBytes, downloadBytes: Buffer.byteLength(text), status: response.status, durationMs: Date.now() - startedAt, ok: response.ok });
++      recorded = true;
++      return { response, text };
+@@ -66,6 +73,7 @@
+       }
+     }
+   } finally {
++    if (!recorded) recordTraffic({ at: new Date().toISOString(), engine: label, uploadBytes: requestBytes, downloadBytes: 0, status: null, durationMs: Date.now() - startedAt, ok: false });
+     await dispatcher?.close();
+   }
+ }
+diff -ruN /dev/null src/util/traffic.ts
+--- /dev/null
++++ b/src/util/traffic.ts
+@@ -0,0 +1,33 @@
++import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
++import { homedir } from 'node:os';
++import { join } from 'node:path';
++
++const DIR = join(homedir(), '.modsearch');
++const FILE = join(DIR, 'traffic.json');
++export interface TrafficEntry {
++  at: string; engine: string; uploadBytes: number; downloadBytes: number;
++  status: number | null; durationMs: number; ok: boolean;
++}
++interface TrafficStore { version: 1; entries: TrafficEntry[] }
++function readStore(): TrafficStore {
++  try {
++    const value = JSON.parse(readFileSync(FILE, 'utf8')) as TrafficStore;
++    if (value.version === 1 && Array.isArray(value.entries)) return value;
++  } catch { /* first run or unreadable file */ }
++  return { version: 1, entries: [] };
++}
++/** Record application-payload bytes for one engine API call (not TCP overhead). */
++export function recordTraffic(entry: TrafficEntry): void {
++  try {
++    mkdirSync(DIR, { recursive: true, mode: 0o700 });
++    const store = readStore();
++    store.entries.push(entry);
++    if (store.entries.length > 10_000) store.entries.splice(0, store.entries.length - 10_000);
++    writeFileSync(FILE, JSON.stringify(store), { mode: 0o600 });
++  } catch { /* telemetry must never break a search */ }
++}
++export function readTraffic(): TrafficStore { return readStore(); }
