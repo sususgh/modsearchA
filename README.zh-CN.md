@@ -21,8 +21,8 @@
 
 <p align="center">
   <a href="https://x.com/liustack"><img src="https://img.shields.io/badge/follow-%40liustack-black?style=flat-square&logo=x&logoColor=white" alt="Follow @liustack on X"></a>
-  <a href="https://www.npmjs.com/package/@liustack/modsearch"><img src="https://img.shields.io/npm/v/@liustack/modsearch?style=flat-square&label=npm&color=cb3837" alt="npm"></a>
-  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/@liustack/modsearch?style=flat-square" alt="Node.js"></a>
+  <a href="https://www.npmjs.com/package/@sususgh/modsearch-c"><img src="https://img.shields.io/npm/v/@sususgh/modsearch-c?style=flat-square&label=npm&color=cb3837" alt="npm"></a>
+  <a href="https://nodejs.org"><img src="https://img.shields.io/node/v/@sususgh/modsearch-c?style=flat-square" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License"></a>
   <img src="https://img.shields.io/badge/Not%20backed%20by-Y%20Combinator-FF6600?style=flat-square&logo=ycombinator&logoColor=white" alt="Not backed by Y Combinator">
   <img src="https://img.shields.io/badge/users-unknown-lightgrey?style=flat-square" alt="Users unknown">
@@ -36,7 +36,7 @@ DeepSeek 和 GLM 等模型没有联网能力或联网能力羸弱。ModSearch �
 
 ## 特性
 
-- **🥇 全网最强的 DeepSeek Harness (dsh) 免费联网搜索插件：** 一条命令即刻安装 `npx -y @deepseek-ai/dsh plugin --profile web add @liustack/modsearch@5.10.14`。桌面版「添加插件」里填 `@liustack/modsearch`，不要填 GitHub 地址。细节见[接入指南](docs/harness-setup.zh-CN.md#deepseek-harness-dsh)。
+- **🥇 全网最强的 DeepSeek Harness (dsh) 免费联网搜索插件：** 一条命令即刻安装 `npx -y @deepseek-ai/dsh plugin --profile web add @sususgh/modsearch-c@5.10.14`。桌面版「添加插件」里填 `@sususgh/modsearch-c`，不要填 GitHub 地址。细节见[接入指南](docs/harness-setup.zh-CN.md#deepseek-harness-dsh)。
 - **开箱免费，免注册。** 搜索和单页抓取默认跑在 Firecrawl 免注册通道上：[每月 1,000 免费 credits](https://www.firecrawl.dev/blog/firecrawl-keyless-launch)，没有账号、没有 API key、没有绑卡。后备通道也全部免费：Antigravity CLI 只需浏览器登录，Tavily、Exa 和免费的 Firecrawl key 各带独立的月度额度，均不要求绑卡。
 - **自动故障转移。** 一个通道失败或额度耗尽时自动切换下一个。
 - **单引擎多密钥轮换。** Tavily、Exa、Firecrawl、Keenable 都可配置逗号分隔的多个密钥。鉴权、限流或配额失败时先轮换到下一个密钥，再按引擎链故障转移。
@@ -88,7 +88,7 @@ key 也可以走环境变量（`TAVILY_API_KEY`、`EXA_API_KEY`、`FIRECRAWL_API
 
 > 按 https://github.com/liustack/modsearch 的 INSTALL.md 安装并配置 modsearch skill，完成后运行体检并把结果告诉我。
 
-DeepSeek Harness (dsh) 里发同一句话即可。INSTALL.md 会认出 dsh，改走原生插件而不是 skill，让 dsh 自带的 `web_search` 直接跑在 modsearch 上。浏览器版由 AI 直接装好。桌面版只接受从自己窗口里装插件，AI 会请你打开「插件」，点「添加插件」，填 `@liustack/modsearch`。
+DeepSeek Harness (dsh) 里发同一句话即可。INSTALL.md 会认出 dsh，改走原生插件而不是 skill，让 dsh 自带的 `web_search` 直接跑在 modsearch 上。浏览器版由 AI 直接装好。桌面版只接受从自己窗口里装插件，AI 会请你打开「插件」，点「添加插件」，填 `@sususgh/modsearch-c`。
 
 也可以直接通过 [skills.sh](https://skills.sh/) 安装同一个 skill：
 
@@ -105,7 +105,7 @@ agy                                                           # 浏览器完成�
 
 选了 key 的话，发一句话给 AI 即可：「把我的 tavily key 设成 tvly-...」。
 
-dsh 用户还有一条不碰命令行的路。在 dsh 侧栏点开「插件」，进入 `@liustack/modsearch`：选首选引擎、填 API 密钥和自建接口地址、勾选哪些引擎参与故障转移，点保存就生效。0.1.6-alpha.2 之前的 dsh 版本里，同一张卡片在设置页的「插件 → 插件配置」里。
+dsh 用户还有一条不碰命令行的路。在 dsh 侧栏点开「插件」，进入 `@sususgh/modsearch-c`：选首选引擎、填 API 密钥和自建接口地址、勾选哪些引擎参与故障转移，点保存就生效。0.1.6-alpha.2 之前的 dsh 版本里，同一张卡片在设置页的「插件 → 插件配置」里。
 
 ![dsh「插件」面板里的 ModSearch 页面：选首选引擎、填 API 密钥与接口地址、勾选参与故障转移的引擎](https://raw.githubusercontent.com/liustack/modsearch/main/assets/demo-dsh-settings-card.jpg)
 
