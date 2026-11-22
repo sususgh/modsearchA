@@ -47,7 +47,7 @@ npx -y @deepseek-ai/dsh plugin --profile web list --depth 0
 
 这里故意写精确版本。pnpm 11 可能通过 `minimumReleaseAge` 扣住刚发布的版本，让 `@latest` 解析成旧包。发布流程会让本命令中的版本与 `package.json` 保持同步。
 
-桌面版的 `desktop` profile 只能在桌面版窗口里装，dsh CLI 会以 `profile "desktop" is managed exclusively by the Electron application` 拒绝它。在「添加插件」对话框里，填包名 `@liustack/modsearch`，不要填 GitHub 仓库地址。只有 npm 包带构建好的 CLI。从 GitHub 安装只拿到源码，而 pnpm 会拦下补构建的那一步。
+桌面版的 `desktop` profile 只能在桌面版窗口里装，dsh CLI 会以 `profile "desktop" is managed exclusively by the Electron application` 拒绝它。在「添加插件」对话框里可以填 npm 包名 `@liustack/modsearch`，也可以填 Git 仓库 HTTPS 地址 `https://github.com/sususgh/modsearchA.git`。Git 安装会执行 `prepare`（即 `pnpm build`）生成 `dist/main.js`；pnpm 10+ 默认不允许 Git 依赖执行构建脚本，首次安装若提示 `Ignored build scripts` 或 `allowBuilds`，请按 DSH/pnpm 提示把准确的包名加入该 profile 的 `pnpm-workspace.yaml`，例如 `allowBuilds: { '@liustack/modsearch': true }`，再重新安装。允许构建等于允许该仓库代码在本机安装时执行，请先确认仓库可信；建议固定到审查过的 commit。
 
 ## bundle 改了什么
 
