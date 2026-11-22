@@ -186,7 +186,7 @@ function registerXSearchTool(ctx) {
   ctx.tools.register({
     name: 'x_search',
     description:
-      'Search X (Twitter) posts through the modsearch bridge. Use for questions about posts, threads, accounts, or discussions on X: what someone posted, reactions to an event, sentiment in a community. Returns structured evidence with a summary, per-post items with URLs, and an uncertainty list. A degraded status means X itself was unreachable and a keyless web search answered second-hand. Run `npx @liustack/modsearch doctor` to inspect the resolved engines.',
+      'Search X (Twitter) posts through the modsearch bridge. Use for questions about posts, threads, accounts, or discussions on X: what someone posted, reactions to an event, sentiment in a community. Returns structured evidence with a summary, per-post items with URLs, and an uncertainty list. A degraded status means X itself was unreachable and a keyless web search answered second-hand. Run `npx @sususgh/modsearch-c doctor` to inspect the resolved engines.',
     parameters: {
       type: 'object',
       properties: {
@@ -259,7 +259,7 @@ function registerReadPageTool(ctx) {
   ctx.tools.register({
     name: 'read_page',
     description:
-      'Read one web page through the modsearch bridge and return digested evidence: a summary, the extracted content, outgoing links, uncertainty, and operational warnings such as cloud fetching. Use it over web_fetch when you want the page digested or focused on one question (pass "query"), or when the page is rendered by JavaScript and a plain fetch returns an empty shell. Use web_fetch, where available, when you need the raw page text or the HTTP status code. Private-network URLs are blocked. Page reading needs no engine setup. Run `npx @liustack/modsearch doctor` to inspect the resolved route.',
+      'Read one web page through the modsearch bridge and return digested evidence: a summary, the extracted content, outgoing links, uncertainty, and operational warnings such as cloud fetching. Use it over web_fetch when you want the page digested or focused on one question (pass "query"), or when the page is rendered by JavaScript and a plain fetch returns an empty shell. Use web_fetch, where available, when you need the raw page text or the HTTP status code. Private-network URLs are blocked. Page reading needs no engine setup. Run `npx @sususgh/modsearch-c doctor` to inspect the resolved route.',
     parameters: {
       type: 'object',
       properties: {
@@ -351,7 +351,7 @@ function cliPath() {
     throw new Error(
       `modsearch's CLI build is missing (${cli}). This happens when the plugin was ` +
         'installed from its GitHub repository, which ships source only. Remove the ' +
-        'plugin and add it again by package name: @liustack/modsearch',
+        'plugin and add it again by package name: @sususgh/modsearch-c',
     );
   }
   return cli;
@@ -379,7 +379,7 @@ async function runCli(args, signal) {
       .join('; ');
     throw new Error(
       `modsearch could not reach the requested source${attempts ? ` (${attempts})` : ''}. ` +
-        'Run `npx @liustack/modsearch doctor` in a terminal to check the engine setup.',
+        'Run `npx @sususgh/modsearch-c doctor` in a terminal to check the engine setup.',
     );
   }
   return entry;
