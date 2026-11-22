@@ -692,6 +692,7 @@ window.__ModuleLoader__.load({
               next[key] = value;
               draftState[1](next);
               noteState[1]('');
+              testState[1]({ status: 'idle', message: '' });
             };
 
             const inputProps = (key, placeholder) => ({
@@ -791,6 +792,7 @@ window.__ModuleLoader__.load({
                     onChange: (event) => {
                       draftState[1](selectEngine(summary, draft, event.target.value));
                       noteState[1]('');
+                      testState[1]({ status: 'idle', message: '' });
                     },
                     style: {
                       appearance: 'none',
@@ -843,7 +845,7 @@ window.__ModuleLoader__.load({
               // having done nothing.
               canKey && current.keySource === 'env' ? hint(t.envNote, 'envnote') : null,
               canModel ? textField(t.model, 'model', draft.engine === 'google' ? 'Google Programmable Search Engine ID（cx）' : t.modelFallback) : null,
-              draft.engine !== ''
+              ['antigravity-cli', 'tavily', 'exa', 'firecrawl', 'keenable', 'youcom', 'google', 'azure'].indexOf(draft.engine) >= 0
                 ? fieldRow(
                     t.testApi,
                     h(
@@ -853,7 +855,7 @@ window.__ModuleLoader__.load({
                         'button',
                         {
                           type: 'button',
-                          disabled: testState[0].status === 'testing',
+                          disabled: testState[0].status === 'testing' || dirty,
                           onClick: async () => {
                             testState[1]({ status: 'testing', message: t.testingApi });
                             try {
@@ -890,6 +892,9 @@ window.__ModuleLoader__.load({
                         },
                         testState[0].status === 'testing' ? t.testingApi : t.testApi,
                       ),
+                      dirty
+                        ? h('div', { style: { fontSize: '12px', color: 'var(--dsw-alias-label-tertiary, inherit)' } }, '请先保存当前 API 配置，再执行真实连通性测试。')
+                        : null,
                       testState[0].message
                         ? h(
                             'div',
@@ -1095,6 +1100,7 @@ window.__ModuleLoader__.load({
                           summaryState[1](next);
                           draftState[1](nextDraft(next, next.engine));
                           noteState[1](t.saved);
+                          testState[1]({ status: 'idle', message: '' });
                           refreshReadiness(next);
                         })
                         .catch((error) => {
