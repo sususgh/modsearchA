@@ -270,7 +270,7 @@ describe('on the Plugins page the card is a section of the page, not a block of 
 
   it('loads as soon as the page shows it, without waiting for a click', () => {
     const { urls } = renderAs({ view: 'page' }, [false, null, null, '', null, { status: 'idle', message: '' }]);
-    expect(urls).toEqual(['/modsearch/config?doctor=1']);
+    expect(urls).toEqual(['/modsearch/usage', '/modsearch/config?doctor=1']);
   });
 
   it('answers a summary view with its one-liner and loads nothing', () => {
@@ -688,6 +688,8 @@ describe('the automatic engine chain lists what this machine can actually search
       'firecrawl',
       'keenable',
       'youcom',
+      'google',
+      'azure',
       'grok-cli X search only',
     ]);
     expect(view.texts.some((text) => /status is unavailable/i.test(text))).toBe(true);
