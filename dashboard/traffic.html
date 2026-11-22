@@ -25,7 +25,7 @@ main{max-width:1240px;margin:auto}header{display:flex;align-items:center;justify
 </section>
 <section class="card section"><h2>每月流量报表</h2><div class="scroll"><table><thead><tr><th>月份</th><th>请求</th><th>上传</th><th>下载</th></tr></thead><tbody id="monthly"></tbody></table></div></section>
 <section class="card section"><h2>最近 API 请求明细</h2><div class="scroll"><table><thead><tr><th>时间</th><th>引擎</th><th>上传</th><th>下载</th><th>HTTP</th><th>耗时</th><th>结果</th></tr></thead><tbody id="recent"></tbody></table></div></section>
-<p class="note">统计口径：ModSearch 直接发出的 HTTP 请求/响应正文（payload）字节数，不含 TLS、TCP 和 HTTP 头部开销。第三方 CLI（如 Antigravity / Grok）自身进程内部的网络流量无法从本层准确读取，因此不会冒充为已统计。API 连通性测试会真实发出一次搜索请求，可能消耗该 API 的配额或费用。此页不保存 API 密钥、请求正文或搜索词。</p>
+<p class="note">统计口径：估算 HTTP 请求目标（含 GET 查询参数）、显式请求头、请求体，以及响应头和解码后响应体的字节数；不含 TLS、TCP、压缩头和网络链路开销。第三方 CLI（如 Antigravity / Grok）自身进程内部的网络流量无法从本层准确读取，因此不会冒充为已统计。API 连通性测试会真实发出一次搜索请求，可能消耗该 API 的配额或费用。此页不保存 API 密钥、请求正文或搜索词。</p>
 </main>
 <script>
 const $=id=>document.getElementById(id);
