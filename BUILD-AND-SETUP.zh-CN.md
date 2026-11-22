@@ -64,10 +64,10 @@ Azure Web Search / Bing grounding 可能产生费用，具体以 Azure 订阅和
 在 dsh 的 ModSearch 插件配置卡片中打开页面后，监控区每 2 秒刷新一次：
 
 - API 请求次数
-- 上传请求正文大小
-- 下载响应正文大小
+- 上传请求行、显式请求头和请求正文的估算字节数
+- 下载响应头和解码后响应正文的估算字节数
 - 最近请求对应的引擎、HTTP 状态码和字节数
 
 记录文件：`~/.modsearch/network-usage.jsonl`。只记录引擎名、时间、状态码、耗时和正文大小；不记录 URL、搜索词、请求/响应正文、请求头或 API 密钥。
 
-**统计口径：**这是 ModSearch `requestText` 网络请求的 HTTP 正文流量，不是操作系统网卡层的总流量；不包含 TLS 开销、HTTP headers，也不覆盖 Antigravity/Grok 等外部 CLI 进程自行产生的网络流量。
+**统计口径：**这是 ModSearch `requestText` 网络请求的 HTTP 应用层估算流量：上传计入请求目标（包括 GET 查询参数）、显式请求头和请求体；下载计入响应头和解码后的响应体。不等于网卡层精确线速字节数，不含 TLS/TCP 开销、压缩后的头部，也不覆盖 Antigravity/Grok 等外部 CLI 进程自行产生的网络流量。
