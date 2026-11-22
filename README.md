@@ -134,25 +134,7 @@ This repo does not accept pull requests. The project is maintained by the author
 - **[Open an issue](https://github.com/liustack/modsearch/issues).** Bugs, suggestions, confusing errors, unclear docs. Issues are read and shape what gets built next.
 - **Fork it.** Under MIT your copy is fully yours to modify and publish.
 
-## Shameless plug
-
-Follow the WeChat official account **liustack** (Chinese-language): AI tools, practice, and ideas, posted as they land. Scan the code, or search WeChat for "liustack":
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/liustack/modsearch/main/assets/wechat-qrcode.png" width="420" alt="WeChat official account liustack" />
-</p>
-
 ⭐ If it helps, star [ModSearch](https://github.com/liustack/modsearch). Stars are how the next developer finds it.
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=liustack%2Fmodsearch&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=liustack/modsearch&type=date&theme=dark&legend=top-left&sealed_token=ymc92zQxHuDgpexZjaqDbEhMCuCjGHskpQGkzkwwrU0FksWoq5MasrMA64y9G2CxNV9O3EFeRjKneWSDYmHH4HWjpUiaAme0haCp-1Y72cRmHDv8coW35A" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=liustack/modsearch&type=date&legend=top-left&sealed_token=ymc92zQxHuDgpexZjaqDbEhMCuCjGHskpQGkzkwwrU0FksWoq5MasrMA64y9G2CxNV9O3EFeRjKneWSDYmHH4HWjpUiaAme0haCp-1Y72cRmHDv8coW35A" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=liustack/modsearch&type=date&legend=top-left&sealed_token=ymc92zQxHuDgpexZjaqDbEhMCuCjGHskpQGkzkwwrU0FksWoq5MasrMA64y9G2CxNV9O3EFeRjKneWSDYmHH4HWjpUiaAme0haCp-1Y72cRmHDv8coW35A" />
- </picture>
-</a>
 
 ## Disclaimer
 
