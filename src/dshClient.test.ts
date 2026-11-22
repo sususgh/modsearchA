@@ -260,7 +260,7 @@ describe('on the Plugins page the card is a section of the page, not a block of 
     const draft = evaluate({})
       .factory(() => ({}))
       .__card.nextDraft(SUMMARY, 'tavily');
-    const { nodes } = renderAs({ view: 'page' }, [false, SUMMARY, draft, '']);
+    const { nodes } = renderAs({ view: 'page' }, [false, SUMMARY, draft, '', null, { status: 'idle', message: '' }]);
     expect(nodes.some((node) => 'aria-expanded' in node.props)).toBe(false);
     expect(nodes.some((node) => node.type === 'select')).toBe(true);
     expect(nodes.some((node) => node.type === 'h4' && node.kids.includes('Engine settings'))).toBe(
@@ -269,12 +269,12 @@ describe('on the Plugins page the card is a section of the page, not a block of 
   });
 
   it('loads as soon as the page shows it, without waiting for a click', () => {
-    const { urls } = renderAs({ view: 'page' }, [false, null, null, '']);
-    expect(urls).toEqual(['/modsearch/config?doctor=1']);
+    const { urls } = renderAs({ view: 'page' }, [false, null, null, '', null, { status: 'idle', message: '' }]);
+    expect(urls).toEqual(['/modsearch/usage', '/modsearch/config?doctor=1']);
   });
 
   it('answers a summary view with its one-liner and loads nothing', () => {
-    const { out, urls } = renderAs({ view: 'summary' }, [false, null, null, '']);
+    const { out, urls } = renderAs({ view: 'summary' }, [false, null, null, '', null, { status: 'idle', message: '' }]);
     expect(out).toBe('Search engine provider configuration.');
     expect(urls).toEqual([]);
   });
@@ -282,7 +282,7 @@ describe('on the Plugins page the card is a section of the page, not a block of 
   it('offers a retry after a failed load, since the page never collapses to retry', () => {
     // The collapsible card retried on the next expand. On the page the form
     // is always open, so the load effect never fires again on its own.
-    const failed = renderAs({ view: 'page' }, [false, null, null, 'load failed'], false);
+    const failed = renderAs({ view: 'page' }, [false, null, null, 'load failed', null, { status: 'idle', message: '' }], false);
     expect(failed.urls).toEqual([]);
     const retry = failed.nodes.find(
       (node) => node.type === 'button' && node.kids.includes('Retry'),
@@ -295,12 +295,12 @@ describe('on the Plugins page the card is a section of the page, not a block of 
   });
 
   it('shows no retry while the first load is still on its way', () => {
-    const { nodes } = renderAs({ view: 'page' }, [false, null, null, '']);
+    const { nodes } = renderAs({ view: 'page' }, [false, null, null, '', null, { status: 'idle', message: '' }]);
     expect(nodes.some((node) => node.type === 'button' && node.kids.includes('Retry'))).toBe(false);
   });
 
   it('keeps the collapsible card where the host passes no view', () => {
-    const { nodes, urls } = renderAs({}, [false, null, null, '']);
+    const { nodes, urls } = renderAs({}, [false, null, null, '', null, { status: 'idle', message: '' }]);
     expect(nodes.some((node) => node.props['aria-expanded'] === false)).toBe(true);
     expect(urls).toEqual([]);
   });
@@ -365,6 +365,8 @@ describe('a save carries only what the save is about', () => {
         firecrawl: true,
         keenable: true,
         youcom: true,
+        google: true,
+        azure: true,
         'grok-cli': true,
         local: true,
       },
@@ -464,7 +466,7 @@ describe('the API key field is masked without being a password field', () => {
     for (const css of [{ supports: () => true }, { supports: () => false }, undefined]) {
       const built: Array<{ type: unknown; props: Record<string, unknown> }> = [];
       const draft = { engine: 'tavily', apiKey: '', baseURL: '', model: '' };
-      const states = [true, SUMMARY, draft, ''];
+      const states = [true, SUMMARY, draft, '', null, { status: 'idle', message: '' }];
       let index = 0;
       const react = {
         createElement: (type: unknown, props: Record<string, unknown>, ...kids: unknown[]) => {
@@ -541,7 +543,7 @@ function render(
 ): Rendered {
   const card = evaluate({ lang, ...probes }).factory(() => ({})).__card;
   const draft = card.nextDraft(summary, String(summary.engine ?? ''));
-  const states = [true, summary, draft, ''];
+  const states = [true, summary, draft, '', null, { status: 'idle', message: '' }];
   const built: Node[] = [];
   let index = 0;
   const react = {
@@ -686,6 +688,8 @@ describe('the automatic engine chain lists what this machine can actually search
       'firecrawl',
       'keenable',
       'youcom',
+      'google',
+      'azure',
       'grok-cli X search only',
     ]);
     expect(view.texts.some((text) => /status is unavailable/i.test(text))).toBe(true);
@@ -780,7 +784,7 @@ describe('a save re-reads what the machine can do now', () => {
       useState: () => {
         const slot = index++;
         return [
-          [true, summary, draft, ''][slot],
+          [true, summary, draft, '', null, { status: 'idle', message: '' }][slot],
           (value: unknown) => {
             if (slot === 1) {
               summaries.push(value as Record<string, unknown>);
@@ -832,7 +836,7 @@ describe('a save re-reads what the machine can do now', () => {
       useState: () => {
         const slot = index++;
         return [
-          [true, SUMMARY, draft, ''][slot],
+          [true, SUMMARY, draft, '', null, { status: 'idle', message: '' }][slot],
           (value: unknown) => {
             if (slot === 3) {
               notes.push(String(value));
@@ -873,6 +877,8 @@ describe('the preference list offers only engines a preference can mean', () => 
       'firecrawl',
       'keenable',
       'youcom',
+      'google',
+      'azure',
       'grok-cli',
     ]);
   });
@@ -1025,13 +1031,15 @@ describe('a failed load or save speaks the reader’s language', () => {
   }
 
   /** Expanded with nothing loaded yet: the effect fires the load, which fails. */
-  const loadStates = (): unknown[] => [true, null, null, ''];
+  const loadStates = (): unknown[] => [true, null, null, '', null, { status: 'idle', message: '' }];
   /** Expanded with a summary whose draft was edited, so save is enabled. */
   const saveStates = (): unknown[] => [
     true,
     SUMMARY,
     { engine: 'tavily', apiKey: 'tvly-new', baseURL: 'https://a.example', model: '' },
     '',
+    null,
+    { status: 'idle', message: '' },
   ];
 
   function clickSave(nodes: Node[], label: string): void {

@@ -97,6 +97,8 @@ window.__ModuleLoader__.load({
         loadFailed: 'load failed',
         saveFailed: 'save failed',
         retry: 'Retry',
+        testApi: 'Test API connection',
+        testingApi: 'Sending a real test request…',
       },
       zh: {
         // 不叫「网页搜索」：dsh 自带一张「网页搜索（DeepSeek 搜索提供方）」卡片，
@@ -135,6 +137,8 @@ window.__ModuleLoader__.load({
         loadFailed: '加载失败',
         saveFailed: '保存失败',
         retry: '重试',
+        testApi: '测试 API 连通性',
+        testingApi: '正在发送真实 API 测试请求…',
       },
     };
 
@@ -502,6 +506,8 @@ window.__ModuleLoader__.load({
         var summaryState = react.useState(null);
         var draftState = react.useState(null);
         var noteState = react.useState('');
+        var usageState = react.useState(null);
+        var testState = react.useState({ status: 'idle', message: '' });
         // The page already heads the form with the plugin's title, so the form
         // is open from the start there: a collapsed block under that title
         // would ask for the same click twice.
@@ -686,6 +692,7 @@ window.__ModuleLoader__.load({
               next[key] = value;
               draftState[1](next);
               noteState[1]('');
+              testState[1]({ status: 'idle', message: '' });
             };
 
             const inputProps = (key, placeholder) => ({
@@ -785,6 +792,7 @@ window.__ModuleLoader__.load({
                     onChange: (event) => {
                       draftState[1](selectEngine(summary, draft, event.target.value));
                       noteState[1]('');
+                      testState[1]({ status: 'idle', message: '' });
                     },
                     style: {
                       appearance: 'none',
@@ -837,6 +845,74 @@ window.__ModuleLoader__.load({
               // having done nothing.
               canKey && current.keySource === 'env' ? hint(t.envNote, 'envnote') : null,
               canModel ? textField(t.model, 'model', draft.engine === 'google' ? 'Google Programmable Search Engine ID（cx）' : t.modelFallback) : null,
+              ['antigravity-cli', 'tavily', 'exa', 'firecrawl', 'keenable', 'youcom', 'google', 'azure'].indexOf(draft.engine) >= 0
+                ? fieldRow(
+                    t.testApi,
+                    h(
+                      'div',
+                      { style: { display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '8px' } },
+                      h(
+                        'button',
+                        {
+                          type: 'button',
+                          disabled: testState[0].status === 'testing' || dirty,
+                          onClick: async () => {
+                            testState[1]({ status: 'testing', message: t.testingApi });
+                            try {
+                              const response = await fetch('/modsearch/test-engine', {
+                                method: 'POST',
+                                headers: { 'content-type': 'application/json' },
+                                body: JSON.stringify({ engine: draft.engine }),
+                              });
+                              const result = await response.json();
+                              if (!response.ok || result.ok !== true) {
+                                throw new Error(result.error || 'API connection test failed.');
+                              }
+                              testState[1]({
+                                status: 'success',
+                                message: result.message + ' (' + result.durationMs + ' ms; ' + result.resultCount + ' results)',
+                              });
+                            } catch (error) {
+                              testState[1]({ status: 'error', message: noteFrom(error, 'API connection test failed.') });
+                            }
+                          },
+                          style: {
+                            appearance: 'none',
+                            font: 'inherit',
+                            fontSize: '13px',
+                            lineHeight: 1.5,
+                            cursor: testState[0].status === 'testing' ? 'wait' : 'pointer',
+                            border: '1px solid var(--dsw-alias-border-l2, rgba(127,127,127,0.35))',
+                            borderRadius: '8px',
+                            padding: '7px 14px',
+                            background: 'var(--dsw-alias-bg-layer-3, rgba(127,127,127,0.08))',
+                            color: 'inherit',
+                            opacity: testState[0].status === 'testing' ? 0.6 : 1,
+                          },
+                        },
+                        testState[0].status === 'testing' ? t.testingApi : t.testApi,
+                      ),
+                      dirty
+                        ? h('div', { style: { fontSize: '12px', color: 'var(--dsw-alias-label-tertiary, inherit)' } }, '请先保存当前 API 配置，再执行真实连通性测试。')
+                        : null,
+                      testState[0].message
+                        ? h(
+                            'div',
+                            {
+                              role: 'status',
+                              style: {
+                                fontSize: '12px',
+                                color: testState[0].status === 'success' ? '#16a36a' : testState[0].status === 'error' ? '#dc5656' : 'var(--dsw-alias-label-tertiary, inherit)',
+                              },
+                            },
+                            testState[0].message,
+                          )
+                        : null,
+                    ),
+                    'api-test',
+                    t.testApi,
+                  )
+                : null,
               fieldRow(
                 h(
                   'span',
@@ -905,8 +981,47 @@ window.__ModuleLoader__.load({
                 'network-usage',
               ),
               usage && Array.isArray(usage.recent) && usage.recent.length
-                ? hint('最近请求：' + usage.recent.slice(0, 4).map((row) => `${row.engine} ${row.status} ↑${formatBytes(row.uploadBytes)} ↓${formatBytes(row.downloadBytes)}`).join('  ·  '), 'network-recent')
+                ? hint('最近请求：' + usage.recent.slice(0, 4).map((row) => `${row.engine} ${row.status ?? '连接失败'} ↑${formatBytes(row.uploadBytes)} ↓${formatBytes(row.downloadBytes)}`).join('  ·  '), 'network-recent')
                 : hint('尚无网络请求记录。请求体和响应体只统计字节数，不保存搜索内容或 API 密钥。', 'network-empty'),
+              usage && Array.isArray(usage.byEngine) && usage.byEngine.length
+                ? fieldRow(
+                    '各 API / 引擎独立流量',
+                    h(
+                      'div',
+                      { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '8px' } },
+                      ...usage.byEngine.map((row) =>
+                        h(
+                          'div',
+                          { key: row.name, style: { padding: '10px', borderRadius: '8px', background: 'var(--dsw-alias-bg-layer-2, rgba(127,127,127,0.08))' } },
+                          h('strong', { style: { display: 'block', fontSize: '13px' } }, row.name),
+                          h('div', { style: { fontSize: '12px', marginTop: '4px' } }, '↑ ' + formatBytes(row.uploadBytes) + '  ↓ ' + formatBytes(row.downloadBytes)),
+                          h('div', { style: { fontSize: '11px', color: 'var(--dsw-alias-label-tertiary, inherit)', marginTop: '3px' } }, row.requests + ' 次 · 成功 ' + row.success + ' · 失败 ' + row.failed),
+                        ),
+                      ),
+                    ),
+                    'network-engines',
+                    '各 API / 引擎独立流量',
+                  )
+                : null,
+              usage && ((usage.daily || []).length || (usage.monthly || []).length)
+                ? fieldRow(
+                    '每日 / 每月报表',
+                    h(
+                      'div',
+                      { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '10px' } },
+                      h('div', null,
+                        h('strong', { style: { fontSize: '12px' } }, '最近每日'),
+                        ...usage.daily.slice(0, 5).map((row) => h('div', { key: row.name, style: { fontSize: '12px', padding: '3px 0' } }, row.name + ' · ↑' + formatBytes(row.uploadBytes) + ' ↓' + formatBytes(row.downloadBytes))),
+                      ),
+                      h('div', null,
+                        h('strong', { style: { fontSize: '12px' } }, '最近每月'),
+                        ...usage.monthly.slice(0, 5).map((row) => h('div', { key: row.name, style: { fontSize: '12px', padding: '3px 0' } }, row.name + ' · ↑' + formatBytes(row.uploadBytes) + ' ↓' + formatBytes(row.downloadBytes))),
+                      ),
+                    ),
+                    'network-reports',
+                    '每日 / 每月报表',
+                  )
+                : null,
               h(
                 'div',
                 {
@@ -985,6 +1100,7 @@ window.__ModuleLoader__.load({
                           summaryState[1](next);
                           draftState[1](nextDraft(next, next.engine));
                           noteState[1](t.saved);
+                          testState[1]({ status: 'idle', message: '' });
                           refreshReadiness(next);
                         })
                         .catch((error) => {
@@ -1026,6 +1142,16 @@ window.__ModuleLoader__.load({
               t.section,
             ),
             body,
+            h(
+              'a',
+              {
+                href: '/modsearch/traffic',
+                target: '_blank',
+                rel: 'noreferrer',
+                style: { display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '14px', padding: '9px 12px', border: '1px solid var(--dsw-alias-border-l2, rgba(127,127,127,0.35))', borderRadius: '9px', color: 'var(--dsw-alias-label-primary, inherit)', textDecoration: 'none', fontSize: '13px' },
+              },
+              '◉  打开完整实时流量监控 ↗',
+            ),
           );
         }
 

@@ -87,6 +87,8 @@ export function apply(ctx, config = {}) {
     ctx.inject(['webServer'], (scope) => {
       try {
         registerConfigRoute(scope);
+        registerTrafficRoute(scope);
+        registerEngineTestRoute(scope);
       } catch (error) {
         console.error(`[modsearch] settings card route skipped: ${error}`);
       }
@@ -912,16 +914,105 @@ async function engineReadiness() {
  */
 function networkUsageSummary() {
   const file = join(homedir(), '.modsearch', 'network-usage.jsonl');
-  if (!existsSync(file)) return { requests: 0, uploadBytes: 0, downloadBytes: 0, recent: [] };
+  if (!existsSync(file)) return { requests: 0, success: 0, failed: 0, uploadBytes: 0, downloadBytes: 0, byEngine: [], daily: [], monthly: [], recent: [] };
   let rows = [];
-  try { rows = readFileSync(file, 'utf8').split('\n').filter(Boolean).slice(-2000).map((line) => JSON.parse(line)); } catch { rows = []; }
-  const recent = rows.slice(-100).reverse();
-  return {
-    requests: rows.length,
-    uploadBytes: rows.reduce((n, row) => n + (Number(row.uploadBytes) || 0), 0),
-    downloadBytes: rows.reduce((n, row) => n + (Number(row.downloadBytes) || 0), 0),
-    recent,
+  try {
+    rows = readFileSync(file, 'utf8').split('\n').filter(Boolean).slice(-10000).map((line) => JSON.parse(line));
+  } catch { rows = []; }
+  const group = (keyOf) => {
+    const map = new Map();
+    for (const row of rows) {
+      const key = keyOf(row);
+      if (!key) continue;
+      const item = map.get(key) || { name: key, requests: 0, success: 0, failed: 0, uploadBytes: 0, downloadBytes: 0 };
+      item.requests += 1;
+      item.uploadBytes += Number(row.uploadBytes) || 0;
+      item.downloadBytes += Number(row.downloadBytes) || 0;
+      if (Number(row.status) >= 200 && Number(row.status) < 300) item.success += 1;
+      else item.failed += 1;
+      map.set(key, item);
+    }
+    return [...map.values()];
   };
+  const total = (field) => rows.reduce((n, row) => n + (Number(row[field]) || 0), 0);
+  const byEngine = group((row) => row.engine).sort((a, b) => b.requests - a.requests);
+  const daily = group((row) => typeof row.at === 'string' ? row.at.slice(0, 10) : '').sort((a, b) => b.name.localeCompare(a.name)).slice(0, 30);
+  const monthly = group((row) => typeof row.at === 'string' ? row.at.slice(0, 7) : '').sort((a, b) => b.name.localeCompare(a.name)).slice(0, 12);
+  const success = rows.filter((row) => Number(row.status) >= 200 && Number(row.status) < 300).length;
+  return {
+    requests: rows.length, success, failed: rows.length - success,
+    uploadBytes: total('uploadBytes'), downloadBytes: total('downloadBytes'),
+    byEngine, daily, monthly, recent: rows.slice(-100).reverse(),
+  };
+}
+
+function registerTrafficRoute(ctx) {
+  const route = {
+    name: 'modsearch-traffic',
+    kind: 'exact',
+    path: '/modsearch/traffic',
+    handler: async (req, res) => {
+      if (req.method !== 'GET') { res.writeHead(405).end(); return; }
+      if (new URL(req.url, 'http://localhost').searchParams.has('data')) {
+        res.writeHead(200, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+        res.end(JSON.stringify(networkUsageSummary()));
+        return;
+      }
+      try {
+        const html = readFileSync(new URL('../dashboard/traffic.html', import.meta.url), 'utf8');
+        res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' });
+        res.end(html);
+      } catch (error) {
+        res.writeHead(500, { 'content-type': 'text/plain; charset=utf-8' });
+        res.end('ModSearch dashboard is missing: ' + String(error?.message ?? error));
+      }
+    },
+  };
+  ctx.effect(() => ctx.webServer.register(route), 'modsearch: traffic dashboard route');
+}
+
+function registerEngineTestRoute(ctx) {
+  const route = {
+    name: 'modsearch-test-engine',
+    kind: 'exact',
+    path: '/modsearch/test-engine',
+    handler: async (req, res) => {
+      const send = (status, body) => {
+        res.writeHead(status, { 'content-type': 'application/json', 'cache-control': 'no-store' });
+        res.end(JSON.stringify(body));
+      };
+      if (req.method !== 'POST') { res.writeHead(405).end(); return; }
+      try {
+        const chunks = [];
+        let size = 0;
+        for await (const chunk of req) {
+          size += chunk.length;
+          if (size > 4096) { send(413, { ok: false, error: 'test request too large' }); req.destroy(); return; }
+          chunks.push(chunk);
+        }
+        const payload = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+        const engine = typeof payload?.engine === 'string' ? payload.engine.trim().toLowerCase() : '';
+        const allowed = ['antigravity-cli', 'tavily', 'exa', 'firecrawl', 'keenable', 'youcom', 'google', 'azure'];
+        if (!allowed.includes(engine)) { send(400, { ok: false, error: 'Choose a supported web-search engine first.' }); return; }
+        const started = Date.now();
+        const entry = await runCli([
+          '-q', 'ModSearch API connection test. Return one short result.',
+          '--source', 'web', '--engine', engine, '--max-results', '1',
+          '--timeout', '15000', '--deadline', '25000',
+        ], AbortSignal.timeout(30000));
+        send(200, {
+          ok: true, engine, durationMs: Date.now() - started,
+          resultCount: Array.isArray(entry.items) ? entry.items.length : 0,
+          message: Array.isArray(entry.items) && entry.items.length
+            ? 'API responded and returned search results.'
+            : 'API responded successfully, but returned no search results.',
+        });
+      } catch (error) {
+        send(502, { ok: false, error: String(error?.message ?? error) });
+      }
+    },
+  };
+  ctx.effect(() => ctx.webServer.register(route), 'modsearch: engine connection test route');
 }
 
 function registerConfigRoute(ctx) {
