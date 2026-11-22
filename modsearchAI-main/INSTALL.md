@@ -36,11 +36,11 @@ UI started with `dsh --profile web` runs `web`.
 you.** The dsh CLI refuses to change that profile (`profile "desktop" is managed
 exclusively by the Electron application`), so do not run the commands below.
 Ask the user to open **Plugins** in the dsh sidebar, click **Add plugin**, enter
-`@liustack/modsearch` (the package name, not the GitHub URL), and install. When
+`@sususgh/modsearch-c` (the package name, not the GitHub URL), and install. When
 they say it is done, confirm the profile lists it:
 
 ```bash
-grep '"@liustack/modsearch"' ~/.dsh/profiles/desktop/package.json
+grep '"@sususgh/modsearch-c"' ~/.dsh/profiles/desktop/package.json
 ```
 
 Then skip to the restart step after the commands.
@@ -49,7 +49,7 @@ Then skip to the restart step after the commands.
 
 ```bash
 PROFILE="${DSH_PROFILE:-web}"   # or the profile the user named
-npx -y @deepseek-ai/dsh plugin --profile "$PROFILE" add @liustack/modsearch@5.10.14
+npx -y @deepseek-ai/dsh plugin --profile "$PROFILE" add @sususgh/modsearch-c@5.10.14
 ```
 
 Keep the exact version. With `@latest`, pnpm's release-age filter can resolve
@@ -58,14 +58,14 @@ an older package that has no dsh bundle.
 Then confirm the profile picked it up. Both lines must appear:
 
 ```bash
-npx -y @deepseek-ai/dsh --profile "$PROFILE" --dump-config | grep -E 'searchProvider: modsearch|@liustack/modsearch'
+npx -y @deepseek-ai/dsh --profile "$PROFILE" --dump-config | grep -E 'searchProvider: modsearch|@sususgh/modsearch-c'
 ```
 
 For either path, tell the user to quit and reopen dsh, then start a new
 conversation. The running session keeps its old tools until then. Search works keyless out of
 the box. To add engines or keys later, the user opens **Plugins** in the dsh
-sidebar and picks `@liustack/modsearch`, or you run `config set` as in Step 3
-with `npx -y @liustack/modsearch@5.10.14` in place of the launcher.
+sidebar and picks `@sususgh/modsearch-c`, or you run `config set` as in Step 3
+with `npx -y @sususgh/modsearch-c@5.10.14` in place of the launcher.
 
 **If it fails:**
 - `declares no dsh.bundle` -> an older package was resolved. Re-run the `add`
