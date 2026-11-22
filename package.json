@@ -18,7 +18,8 @@
     "eval": "node evals/run.mjs",
     "eval:compare": "node evals/compare-engines.mjs",
     "docs:list": "node scripts/docs-list.js",
-    "prepare": "pnpm build"
+    "prepare": "pnpm build",
+    "doctor:git:windows": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/check-git-windows.ps1"
   },
   "files": [
     "dist",
