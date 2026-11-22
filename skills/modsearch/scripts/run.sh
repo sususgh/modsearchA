@@ -20,7 +20,7 @@ set -eu
 # --- Version constants: stamped by scripts/release.mjs at release time. --------
 # Do not edit PINNED by hand; scripts/stamp.test.mjs asserts it equals the
 # package.json version, and the release script rewrites it on every bump.
-PKG="@liustack/modsearch"
+PKG="@sususgh/modsearch-c"
 BIN="modsearch"
 PINNED="5.10.14"
 # -------------------------------------------------------------------------------
