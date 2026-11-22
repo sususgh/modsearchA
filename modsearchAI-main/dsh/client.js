@@ -14,7 +14,7 @@
 // imports from dsh client packages: the same zero-dependency stance as the
 // host half.
 window.__ModuleLoader__.load({
-  id: '@liustack/modsearch',
+  id: '@sususgh/modsearch-c',
   factory: (require) => {
     var module = { exports: {} };
     var exports = module.exports;
@@ -43,7 +43,7 @@ window.__ModuleLoader__.load({
     var CHAIN_ENGINES = ENGINES.filter((name) => name !== 'local');
 
     // The Plugins page dispatches a bundle's configuration by npm package name.
-    var PACKAGE_NAME = '@liustack/modsearch';
+    var PACKAGE_NAME = '@sususgh/modsearch-c';
 
     function formatBytes(value) {
       var n = Math.max(0, Number(value) || 0);
