@@ -62,7 +62,7 @@ export async function requestText(
   // none of the URL, headers or body is written to the ledger.
   const method = (init.method || 'GET').toUpperCase();
   const uploadBytes =
-    Buffer.byteLength(`${method} ${target.pathname}${target.search} HTTP/1.1\\r\\n`) +
+    Buffer.byteLength(`${method} ${target.pathname}${target.search} HTTP/1.1\r\n`) +
     headerByteLength(init.headers) + 2 + bodyBytes;
   let responseStatus: number | null = null;
   let recorded = false;
@@ -107,7 +107,7 @@ export async function requestText(
 function headerByteLength(headers: HeadersInit | undefined): number {
   let bytes = 0;
   new Headers(headers).forEach((value, name) => {
-    bytes += Buffer.byteLength(`${name}: ${value}\\r\\n`);
+    bytes += Buffer.byteLength(`${name}: ${value}\r\n`);
   });
   return bytes;
 }
@@ -115,7 +115,7 @@ function headerByteLength(headers: HeadersInit | undefined): number {
 /** Approximate response status line + headers + decoded body bytes. */
 function responseByteLength(response: Response, text: string): number {
   return (
-    Buffer.byteLength(`HTTP/1.1 ${response.status}\\r\\n`) +
+    Buffer.byteLength(`HTTP/1.1 ${response.status}\r\n`) +
     headerByteLength(response.headers) + 2 + Buffer.byteLength(text)
   );
 }
