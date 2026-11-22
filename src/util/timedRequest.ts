@@ -104,7 +104,7 @@ export async function requestText(
 }
 
 /** Approximate the uncompressed HTTP header-section size, without retaining values. */
-function headerByteLength(headers: HeadersInit | undefined): number {
+function headerByteLength(headers: RequestInit['headers']): number {
   let bytes = 0;
   new Headers(headers).forEach((value, name) => {
     bytes += Buffer.byteLength(`${name}: ${value}\r\n`);
