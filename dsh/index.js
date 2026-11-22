@@ -341,17 +341,18 @@ function childEnv() {
 }
 
 /**
- * The CLI this plugin spawns. Only the npm package ships dist/: a GitHub
- * source install (DSH's add dialog takes a repo URL) carries no build, and
- * the bare "Cannot find module" Node prints then names no way out.
+ * The CLI this plugin spawns. Git installs must run the package's `prepare`
+ * script (pnpm build) to produce dist/main.js; pnpm 10+ requires the user to
+ * allow that build explicitly. The guard below gives a useful recovery path
+ * if the build was skipped or the artifact is missing.
  */
 function cliPath() {
   const cli = process.env.MODSEARCH_DSH_CLI || CLI_PATH;
   if (!existsSync(cli)) {
     throw new Error(
       `modsearch's CLI build is missing (${cli}). This happens when the plugin was ` +
-        'installed from its GitHub repository, which ships source only. Remove the ' +
-        'plugin and add it again by package name: @liustack/modsearch',
+        'installed from Git without running its prepare build. Reinstall it with ' +
+        'the package build allowed, or add the published package: @liustack/modsearch',
     );
   }
   return cli;
