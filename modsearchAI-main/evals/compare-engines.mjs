@@ -63,7 +63,7 @@ const FETCH = [
   ['https://pnpm.io/workspaces', /workspace:/],
   ['https://www.sqlite.org/wal.html', /Write-Ahead/],
   ['https://news.ycombinator.com/', /Hacker News|points/],
-  ['https://www.npmjs.com/package/@liustack/modsearch', /modsearch/],
+  ['https://www.npmjs.com/package/@sususgh/modsearch-c', /modsearch/],
   ['https://play.tailwindcss.com/', /tailwind/i],
   ['https://cn.vuejs.org/guide/introduction.html', /渐进式/],
   ['https://api-docs.deepseek.com/zh-cn/', /DeepSeek/],
