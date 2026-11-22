@@ -47,12 +47,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liustack/modsearch.git"
+    "url": "git+https://github.com/sususgh/modsearchA.git"
   },
   "bugs": {
-    "url": "https://github.com/liustack/modsearch/issues"
+    "url": "https://github.com/sususgh/modsearchA/issues"
   },
-  "homepage": "https://github.com/liustack/modsearch#readme",
+  "homepage": "https://github.com/sususgh/modsearchA#readme",
   "engines": {
     "node": ">=22.13"
   },
