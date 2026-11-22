@@ -7,7 +7,7 @@ skill 如何启动 `modsearch` CLI、钉在哪个版本、在什么都跑不了�
 ## 钉住的版本
 
 - 钉住的 CLI 版本：5.4.0
-- npm 包：`@liustack/modsearch`
+- npm 包：`@sususgh/modsearch-c`
 - CLI 命令名：`modsearch`
 
 上面这行版本号和两个启动器内部的常量由 `scripts/release.mjs` 在发布时从 `package.json` 盖章写入，不要手改。三份副本与 `package.json` 一旦不一致，`scripts/stamp.test.mjs` 会让构建失败。
@@ -17,8 +17,8 @@ skill 如何启动 `modsearch` CLI、钉在哪个版本、在什么都跑不了�
 每次调用按这个顺序找一条能跑 CLI 的路：
 
 1. **`PATH` 上已有兼容的 `modsearch`**，按名字直接跑。
-2. **有 `npx`，且 `node` 满足 CLI 的 22.13 下限**，跑 `npx --yes --package @liustack/modsearch@<钉住版本> modsearch <args>`。骑在老 node 上的 npx 会被跳过：那条路已知会在运行时失败。
-3. **有 `bunx`**，跑 `bunx --bun @liustack/modsearch@<钉住版本> <args>`。
+2. **有 `npx`，且 `node` 满足 CLI 的 22.13 下限**，跑 `npx --yes --package @sususgh/modsearch-c@<钉住版本> modsearch <args>`。骑在老 node 上的 npx 会被跳过：那条路已知会在运行时失败。
+3. **有 `bunx`**，跑 `bunx --bun @sususgh/modsearch-c@<钉住版本> <args>`。
 4. **原生产物**，留给 B 阶段。目前没有发布任何产物，这个分支报告 `nativeArtifact.available: false` 后继续往下走。
 5. **什么都没有**，打印结构化诊断并以 `78`（`EX_CONFIG`）退出。
 
