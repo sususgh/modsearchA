@@ -136,25 +136,7 @@ Clash、Clash Verge Rev、mihomo、Surge 的代理 fake-ip 模式开箱即用：
 - **[提交 issue](https://github.com/liustack/modsearch/issues)。** bug、建议、难以理解的报错或文档都欢迎。issue 会被认真阅读，并影响后续开发方向。
 - **Fork。** MIT 协议下你的副本完全归你，修改和发布不受限制。
 
-## 插入硬广一条
-
-关注微信公众号「liustack」：AI 工具、实践与想法，第一时间推送。微信扫码，或搜一搜「liustack」：
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/liustack/modsearch/main/assets/wechat-qrcode.png" width="420" alt="微信公众号 liustack" />
-</p>
-
 ⭐ 如果它对你有用，请给 [ModSearch](https://github.com/liustack/modsearch) 一个 star，这是其他开发者找到它的方式。
-
-## Star History
-
-<a href="https://www.star-history.com/?repos=liustack%2Fmodsearch&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=liustack/modsearch&type=date&theme=dark&legend=top-left&sealed_token=ymc92zQxHuDgpexZjaqDbEhMCuCjGHskpQGkzkwwrU0FksWoq5MasrMA64y9G2CxNV9O3EFeRjKneWSDYmHH4HWjpUiaAme0haCp-1Y72cRmHDv8coW35A" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=liustack/modsearch&type=date&legend=top-left&sealed_token=ymc92zQxHuDgpexZjaqDbEhMCuCjGHskpQGkzkwwrU0FksWoq5MasrMA64y9G2CxNV9O3EFeRjKneWSDYmHH4HWjpUiaAme0haCp-1Y72cRmHDv8coW35A" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=liustack/modsearch&type=date&legend=top-left&sealed_token=ymc92zQxHuDgpexZjaqDbEhMCuCjGHskpQGkzkwwrU0FksWoq5MasrMA64y9G2CxNV9O3EFeRjKneWSDYmHH4HWjpUiaAme0haCp-1Y72cRmHDv8coW35A" />
- </picture>
-</a>
 
 ## 免责声明
 
