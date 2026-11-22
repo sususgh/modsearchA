@@ -269,12 +269,12 @@ describe('on the Plugins page the card is a section of the page, not a block of 
   });
 
   it('loads as soon as the page shows it, without waiting for a click', () => {
-    const { urls } = renderAs({ view: 'page' }, [false, null, null, '']);
+    const { urls } = renderAs({ view: 'page' }, [false, null, null, '', null, { status: 'idle', message: '' }]);
     expect(urls).toEqual(['/modsearch/config?doctor=1']);
   });
 
   it('answers a summary view with its one-liner and loads nothing', () => {
-    const { out, urls } = renderAs({ view: 'summary' }, [false, null, null, '']);
+    const { out, urls } = renderAs({ view: 'summary' }, [false, null, null, '', null, { status: 'idle', message: '' }]);
     expect(out).toBe('Search engine provider configuration.');
     expect(urls).toEqual([]);
   });
@@ -282,7 +282,7 @@ describe('on the Plugins page the card is a section of the page, not a block of 
   it('offers a retry after a failed load, since the page never collapses to retry', () => {
     // The collapsible card retried on the next expand. On the page the form
     // is always open, so the load effect never fires again on its own.
-    const failed = renderAs({ view: 'page' }, [false, null, null, 'load failed'], false);
+    const failed = renderAs({ view: 'page' }, [false, null, null, 'load failed', null, { status: 'idle', message: '' }], false);
     expect(failed.urls).toEqual([]);
     const retry = failed.nodes.find(
       (node) => node.type === 'button' && node.kids.includes('Retry'),
@@ -295,12 +295,12 @@ describe('on the Plugins page the card is a section of the page, not a block of 
   });
 
   it('shows no retry while the first load is still on its way', () => {
-    const { nodes } = renderAs({ view: 'page' }, [false, null, null, '']);
+    const { nodes } = renderAs({ view: 'page' }, [false, null, null, '', null, { status: 'idle', message: '' }]);
     expect(nodes.some((node) => node.type === 'button' && node.kids.includes('Retry'))).toBe(false);
   });
 
   it('keeps the collapsible card where the host passes no view', () => {
-    const { nodes, urls } = renderAs({}, [false, null, null, '']);
+    const { nodes, urls } = renderAs({}, [false, null, null, '', null, { status: 'idle', message: '' }]);
     expect(nodes.some((node) => node.props['aria-expanded'] === false)).toBe(true);
     expect(urls).toEqual([]);
   });
