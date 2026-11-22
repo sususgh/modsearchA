@@ -13,7 +13,7 @@ pnpm test
 pnpm build
 ```
 
-构建成功后，CLI 入口为 `dist/main.js`。本次源码包未包含预编译 `dist/`，需要在目标机器执行 `pnpm build`。
+构建成功后，CLI 入口为 `dist/main.js`。从 Git 安装 DSH 插件时，`prepare` 会自动执行 `pnpm build`；pnpm 10+ 需要在对应 DSH profile 的 `pnpm-workspace.yaml` 中明确允许该包的构建脚本。
 
 ## 2. Google Custom Search
 
