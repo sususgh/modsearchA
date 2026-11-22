@@ -49,29 +49,40 @@ export async function requestText(
     : undefined;
   const startedAt = Date.now();
   const uploadBytes = typeof init.body === 'string' ? Buffer.byteLength(init.body) : init.body instanceof Uint8Array ? init.body.byteLength : 0;
+  let responseStatus: number | null = null;
+  let recorded = false;
   try {
     let response: Response;
     try {
-      // `dispatcher` is a Node/undici extension to fetch's options, not in the
+      // `dispatcher` is a Node/undici extension to fetch's options, not the
       // DOM RequestInit type, so it is attached through a cast.
       response = await fetch(url, {
         ...init,
         signal,
         ...(dispatcher ? { dispatcher } : {}),
       } as RequestInit & { dispatcher?: Dispatcher });
+      responseStatus = response.status;
     } catch (error) {
       throw fail(error);
     }
     try {
       const text = await response.text();
       recordNetworkUsage({ engine: label, at: new Date().toISOString(), uploadBytes, downloadBytes: Buffer.byteLength(text), status: response.status, durationMs: Date.now() - startedAt });
+      recorded = true;
       return { response, text };
     } catch (error) {
       if (!response.ok && !signal.aborted) {
+        recordNetworkUsage({ engine: label, at: new Date().toISOString(), uploadBytes, downloadBytes: 0, status: response.status, durationMs: Date.now() - startedAt });
+        recorded = true;
         return { response, text: '' };
       }
       throw fail(error);
     }
+  } catch (error) {
+    if (!recorded) {
+      recordNetworkUsage({ engine: label, at: new Date().toISOString(), uploadBytes, downloadBytes: 0, status: responseStatus, durationMs: Date.now() - startedAt });
+    }
+    throw error;
   } finally {
     await dispatcher?.close();
   }
@@ -80,7 +91,7 @@ export async function requestText(
 
 /** Best-effort local traffic ledger. It deliberately stores no URL, query, body,
  * headers, API key, or response content. */
-function recordNetworkUsage(entry: { engine: string; at: string; uploadBytes: number; downloadBytes: number; status: number; durationMs: number }): void {
+function recordNetworkUsage(entry: { engine: string; at: string; uploadBytes: number; downloadBytes: number; status: number | null; durationMs: number }): void {
   try {
     const dir = path.join(os.homedir(), '.modsearch');
     fs.mkdirSync(dir, { recursive: true, mode: 0o700 });
