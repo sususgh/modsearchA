@@ -13,6 +13,7 @@
 <p align="center">
   <a href="./README.md">English</a> ·
   <a href="docs/troubleshooting.zh-CN.md">故障排查</a> ·
+  <a href="docs/windows-git-setup.zh-CN.md">Windows Git 环境修复</a> ·
   <a href="skills/modsearch/references/configure.zh-CN.md">配置</a> ·
   <a href="skills/modsearch/references/output-schema.zh-CN.md">输出契约</a> ·
   <a href="docs/security.zh-CN.md">安全</a> ·
