@@ -982,7 +982,7 @@ window.__ModuleLoader__.load({
               ),
               usage && Array.isArray(usage.recent) && usage.recent.length
                 ? hint('最近请求：' + usage.recent.slice(0, 4).map((row) => `${row.engine} ${row.status ?? '连接失败'} ↑${formatBytes(row.uploadBytes)} ↓${formatBytes(row.downloadBytes)}`).join('  ·  '), 'network-recent')
-                : hint('尚无网络请求记录。请求体和响应体只统计字节数，不保存搜索内容或 API 密钥。', 'network-empty'),
+                : hint('尚无网络请求记录。只统计请求目标、请求头、请求体及响应头、响应体的字节数，不保存 URL、搜索内容或 API 密钥。', 'network-empty'),
               usage && Array.isArray(usage.byEngine) && usage.byEngine.length
                 ? fieldRow(
                     '各 API / 引擎独立流量',
