@@ -8,6 +8,7 @@ export default defineConfig({
     __APP_VERSION__: JSON.stringify(pkg.version),
   },
   test: {
+    exclude: ['modsearchAI-main/**', '**/node_modules/**', '**/dist/**', '**/.git/**'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html', 'lcov'],
