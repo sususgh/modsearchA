@@ -56,7 +56,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          VERSION="${GITHUB_REF_NAME#v}"
+          VERSION="$(node -p "require('./package.json').version")"
           PKG="$(node -p "require('./package.json').name")"
           if npm view "$PKG@$VERSION" version >/dev/null 2>&1; then
             echo "$PKG@$VERSION is already on the registry; skipping publish."
@@ -68,7 +68,7 @@ jobs:
           node --input-type=module -e "
           import { readFileSync, writeFileSync } from 'node:fs';
           import { changelogSection } from './scripts/changelog.mjs';
-          const version = process.env.GITHUB_REF_NAME.replace(/^v/, '');
+          const version = JSON.parse(readFileSync('package.json', 'utf-8')).version;
           const notes = changelogSection(readFileSync('CHANGELOG.md', 'utf-8'), version) ?? '';
           writeFileSync('RELEASE_NOTES.md', notes);
           "
@@ -76,8 +76,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            echo "Release $GITHUB_REF_NAME already exists; skipping."
+          VERSION="$(node -p "require('./package.json').version")"
+          TAG="v$VERSION"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; skipping."
           else
-            gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file RELEASE_NOTES.md
+            gh release create "$TAG" --title "$TAG" --notes-file RELEASE_NOTES.md
           fi
