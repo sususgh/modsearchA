@@ -20,6 +20,10 @@ on:
   push:
     tags:
       - 'v*'
+    branches:
+      - main
+    paths:
+      - '.github/workflows/release.yml'
   workflow_dispatch:
 
 permissions:
@@ -61,7 +65,11 @@ jobs:
           if npm view "$PKG@$VERSION" version >/dev/null 2>&1; then
             echo "$PKG@$VERSION is already on the registry; skipping publish."
           else
-            npm publish --provenance --access public
+            if [ -n "$NODE_AUTH_TOKEN" ]; then
+              npm publish --access public
+            else
+              npm publish --provenance --access public
+            fi
           fi
       - name: Build release notes from CHANGELOG
         run: >
