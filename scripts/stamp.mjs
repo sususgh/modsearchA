@@ -119,7 +119,10 @@ export function dshInstallTargets(root, pkgName) {
 }
 
 function allStampTargets(root, pkg) {
-  const base = join(root, 'skills', pkg.name.split('/').pop());
+  // The skill directory is intentionally named `modsearch`, not the npm
+  // package slug (`modsearch-c`). Keep the skill's on-disk name independent
+  // from the publish scope/package name.
+  const base = join(root, 'skills', 'modsearch');
   return [...stampTargets(base, pkg.name), ...dshInstallTargets(root, pkg.name)];
 }
 

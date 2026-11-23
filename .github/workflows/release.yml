@@ -50,6 +50,10 @@ jobs:
       # Idempotent: a manual publish (e.g. during a registry or Actions
       # incident) must not turn this run red when the tag arrives later.
       - name: Publish to npm (skipped when the version is already live)
+        # Supports the first bootstrap publish with a GitHub Actions NPM_TOKEN;
+        # when the secret is absent, npm can use the configured OIDC Trusted Publisher.
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           PKG="$(node -p "require('./package.json').name")"

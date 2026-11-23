@@ -248,7 +248,7 @@ describe('dsh web search provider', () => {
     process.env.MODSEARCH_DSH_CLI = path.join(dir, 'dist', 'main.js');
     const { providers } = await load();
     await expect(providers[0].search({ query: 'anything' })).rejects.toThrow(
-      /build is missing.*GitHub.*@liustack\/modsearch/s,
+      /build is missing.*GitHub.*@sususgh\/modsearch-c/s,
     );
   });
 });
