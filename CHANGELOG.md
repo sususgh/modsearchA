@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.10.15 - 2026-11-24
+
+- Prepare the npm release pipeline for the `@sususgh/modsearch-c` package, including the GitHub Actions npm authentication configuration.
+
 ## 5.10.14 - 2026-11-15
 
 - When Firecrawl's keyless allowance runs out, the error now says when it comes back, and the cooldown keeps Firecrawl at the back of the chain until then. Before, every later search was refused by Firecrawl first (about a second each) before Keenable answered, because the refusal looked like a brief rate limit. Keenable's keyless 429 uses its Retry-After the same way when it sends one.

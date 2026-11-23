@@ -22,7 +22,7 @@ set -eu
 # package.json version, and the release script rewrites it on every bump.
 PKG="@sususgh/modsearch-c"
 BIN="modsearch"
-PINNED="5.10.14"
+PINNED="5.10.15"
 # -------------------------------------------------------------------------------
 
 NATIVE_NOTE="no native artifact is published for this tool yet; phase A ships npm launch paths only"
