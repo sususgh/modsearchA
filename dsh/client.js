@@ -1335,7 +1335,13 @@ window.__ModuleLoader__.load({
 
     function apply(ctx) {
       registerCard(ctx);
-      mountTrafficMiniWidget();
+      // The floating widget is optional: a restricted or partial host DOM must
+      // never prevent the plugin settings card from registering.
+      try {
+        mountTrafficMiniWidget();
+      } catch {
+        // Keep the settings card available when the host DOM is incomplete.
+      }
     }
 
     exports.apply = apply;
