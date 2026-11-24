@@ -36,7 +36,7 @@ The dump should contain both `searchProvider: modsearch` and a plugin row named 
 Install into the profile you actually start. `web` is the normal browser UI profile:
 
 ```sh
-npx -y @deepseek-ai/dsh plugin --profile web add @sususgh/modsearch-c@5.10.15
+npx -y @deepseek-ai/dsh plugin --profile web add @sususgh/modsearch-c@5.10.16
 ```
 
 Restart dsh after installation, then confirm the resolved package:
@@ -71,7 +71,7 @@ The dsh plugin does not keep a second engine config. It inherits the same enviro
 Start with the offline health check:
 
 ```sh
-npx -y @sususgh/modsearch-c@5.10.15 doctor
+npx -y @sususgh/modsearch-c@5.10.16 doctor
 ```
 
 Common settings:
@@ -180,7 +180,7 @@ The first call should use dsh's native `web_search` card. The other two should a
 Refresh the recorded request with the exact current version:
 
 ```sh
-npx -y @deepseek-ai/dsh plugin --profile <name> add @sususgh/modsearch-c@5.10.15
+npx -y @deepseek-ai/dsh plugin --profile <name> add @sususgh/modsearch-c@5.10.16
 ```
 
 Remove it with:
