@@ -1146,8 +1146,6 @@ window.__ModuleLoader__.load({
               'a',
               {
                 href: '/modsearch/traffic',
-                target: '_blank',
-                rel: 'noreferrer',
                 style: { display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '14px', padding: '9px 12px', border: '1px solid var(--dsw-alias-border-l2, rgba(127,127,127,0.35))', borderRadius: '9px', color: 'var(--dsw-alias-label-primary, inherit)', textDecoration: 'none', fontSize: '13px' },
               },
               '◉  打开完整实时流量监控 ↗',
