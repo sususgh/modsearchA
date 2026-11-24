@@ -1,5 +1,13 @@
 # Changelog
 
+## 5.10.17 - 2026-11-24
+
+- Open the live traffic dashboard in a separate browser window so it no longer replaces the active DeepSeek Harness chat. The dashboard can refresh independently alongside the conversation.
+
+## 5.10.16 - 2026-11-24
+
+- Release the package with the updated npm publishing workflow and package metadata.
+
 ## 5.10.15 - 2026-11-24
 
 - Prepare the npm release pipeline for the `@sususgh/modsearch-c` package, including the GitHub Actions npm authentication configuration.

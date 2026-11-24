@@ -1,7 +1,7 @@
 name: release
 
 # Publishes to npm and creates the GitHub release when a version tag is pushed
-# Release trigger refreshed for package version 5.10.16.
+# Release trigger refreshed for package version 5.10.17.
 # (e.g. v3.4.0). Verifies first, then publishes with provenance. This is the
 # single publisher: `pnpm release` only prepares and pushes the tag, it does not
 # publish, so there is no second process racing this one.
