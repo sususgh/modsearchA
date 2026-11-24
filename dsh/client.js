@@ -1216,6 +1216,17 @@ window.__ModuleLoader__.load({
     // Floating API traffic widget: mounted outside the chat tree so it survives
     // DSH SPA conversation changes. Reads the existing usage endpoint only.
     function mountTrafficMiniWidget() {
+      // The plugin's client tests execute this bundle without a browser DOM.
+      // Keep the global widget browser-only and leave the settings card testable.
+      if (
+        typeof document !== 'object' ||
+        !document ||
+        typeof document.getElementById !== 'function' ||
+        typeof document.createElement !== 'function' ||
+        !document.body
+      ) {
+        return;
+      }
       if (document.getElementById('modsearch-traffic-mini-host')) return;
       var host=document.createElement('div');
       host.id='modsearch-traffic-mini-host';
