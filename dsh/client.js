@@ -1212,6 +1212,39 @@ window.__ModuleLoader__.load({
       };
     }
 
+
+    // Floating API traffic widget: mounted outside the chat tree so it survives
+    // DSH SPA conversation changes. Reads the existing usage endpoint only.
+    function mountTrafficMiniWidget() {
+      if (document.getElementById('modsearch-traffic-mini-host')) return;
+      var host=document.createElement('div');
+      host.id='modsearch-traffic-mini-host';
+      host.style.cssText='position:fixed;right:14px;bottom:88px;z-index:2147483000;';
+      var root=host.attachShadow?host.attachShadow({mode:'open'}):host;
+      var css=document.createElement('style');
+      css.textContent=':host{all:initial}.s{font:12px/1.45 system-ui,sans-serif;color:#edf5ff}.pill,.panel{background:rgba(9,18,32,.97);border:1px solid #29415d;box-shadow:0 8px 26px #0006;backdrop-filter:blur(12px)}.pill{display:flex;gap:8px;align-items:center;border-radius:22px;padding:8px 11px;cursor:grab;user-select:none}.dot{width:7px;height:7px;border-radius:50%;background:#39d99b}.panel{width:min(280px,calc(100vw - 28px));border-radius:13px;overflow:hidden}.head{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid #29415d;cursor:grab}.head button,.pill button{background:none;border:0;color:inherit;font:inherit}.body{padding:10px 12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:7px}.cell{background:#15263c;border-radius:8px;padding:8px}.lab{font-size:10px;color:#9db1ca}.val{font-size:15px;font-weight:700;margin-top:3px}.foot{display:flex;justify-content:space-between;margin-top:9px;font-size:10px;color:#9db1ca}a{color:#70d9ff;text-decoration:none}';
+      root.appendChild(css);
+      var box=document.createElement('div');box.className='s';root.appendChild(box);
+      var small=true,data=null,drag=null;
+      try{small=localStorage.getItem('modsearch-traffic-mini-collapsed')!=='0';var p=JSON.parse(localStorage.getItem('modsearch-traffic-mini-position')||'null');if(p){host.style.right=Math.max(0,p.right)+'px';host.style.bottom=Math.max(0,p.bottom)+'px';}}catch(_){}
+      function fmt(n){n=Math.max(0,Number(n)||0);return n<1024?n+' B':n<1048576?(n/1024).toFixed(1)+' KB':(n/1048576).toFixed(2)+' MB';}
+      function draw(){
+        if(small){box.innerHTML='<div class="pill"><span class="dot"></span><b>流量监控</b><span>'+(data?fmt(data.downloadBytes):'…')+'</span><button data-a="open">⌃</button></div>';return;}
+        box.innerHTML='<div class="panel"><div class="head"><b>◉ 实时 API 流量</b><button data-a="close">−</button></div><div class="body"><div class="grid"><div class="cell"><div class="lab">累计下载</div><div class="val">'+(data?fmt(data.downloadBytes):'读取中…')+'</div></div><div class="cell"><div class="lab">累计上传</div><div class="val">'+(data?fmt(data.uploadBytes):'读取中…')+'</div></div><div class="cell"><div class="lab">API 请求</div><div class="val">'+(data?data.requests||0:'—')+'</div></div><div class="cell"><div class="lab">成功率</div><div class="val">'+(data?((data.requests?(data.success||0)/data.requests:0)*100).toFixed(1)+'%':'—')+'</div></div></div><div class="foot"><span>每 2 秒刷新</span><a href="/modsearch/traffic">完整监控 ↗</a></div></div></div>';
+      }
+      function toggle(v){small=v;try{localStorage.setItem('modsearch-traffic-mini-collapsed',v?'1':'0');}catch(_){}draw();}
+      box.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-a]');if(b){toggle(b.getAttribute('data-a')!=='close');}else if(small)toggle(false);});
+      box.addEventListener('pointerdown',function(e){var h=e.target.closest&&e.target.closest('.pill,.head');if(!h||e.target.closest('button,a'))return;drag={x:e.clientX,y:e.clientY,r:parseFloat(host.style.right)||14,b:parseFloat(host.style.bottom)||88};});
+      box.addEventListener('pointermove',function(e){if(!drag)return;host.style.right=Math.max(0,drag.r-(e.clientX-drag.x))+'px';host.style.bottom=Math.max(0,drag.b-(e.clientY-drag.y))+'px';});
+      function end(){if(!drag)return;drag=null;try{localStorage.setItem('modsearch-traffic-mini-position',JSON.stringify({right:parseFloat(host.style.right)||14,bottom:parseFloat(host.style.bottom)||88}));}catch(_){}}
+      box.addEventListener('pointerup',end);box.addEventListener('pointercancel',end);
+      document.body.appendChild(host);draw();
+      var stopped=false;
+      async function refresh(){if(stopped||!host.isConnected)return;try{var r=await fetch('/modsearch/usage',{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);data=await r.json();draw();}catch(_){}}
+      refresh();var timer=window.setInterval(refresh,2000);
+      window.addEventListener('pagehide',function(){stopped=true;window.clearInterval(timer);},{once:true});
+    }
+
     function registerCard(ctx) {
       // Reaching for an undeclared service throws in cordis, so each optional
       // dependency rides a scoped ctx.inject of its own: the closure runs
@@ -1291,6 +1324,7 @@ window.__ModuleLoader__.load({
 
     function apply(ctx) {
       registerCard(ctx);
+      mountTrafficMiniWidget();
     }
 
     exports.apply = apply;
