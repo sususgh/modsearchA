@@ -24,7 +24,7 @@ $ErrorActionPreference = 'Stop'
 # package.json version, and the release script rewrites it on every bump.
 $Package = '@sususgh/modsearch-c'
 $Bin = 'modsearch'
-$Pinned = '5.10.17'
+$Pinned = '5.10.18'
 # -------------------------------------------------------------------------------
 
 $NativeNote = 'no native artifact is published for this tool yet; phase A ships npm launch paths only'
