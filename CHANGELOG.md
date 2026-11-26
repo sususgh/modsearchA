@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.10.20 - 2026-11-27
+
+- Fix the floating traffic monitor close control: closing the expanded panel now returns to the compact desktop widget instead of leaving the panel open.
+- Improve drag handling with pointer capture and click suppression after a drag; keep the widget position persistent.
+- Label provider-compatible custom edge/CDN proxy URLs explicitly and document that arbitrary public CDN nodes are not assumed safe or automatically faster.
+
 ## 5.10.19 - 2026-11-27
 
 - Known issue: the traffic-monitor icon opens the traffic panel, but the panel cannot currently be closed after opening. This issue is documented and remains unresolved in this version.
