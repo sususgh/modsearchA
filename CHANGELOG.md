@@ -1,5 +1,14 @@
 # Changelog
 
+## 5.10.21 - 2026-11-27
+
+- Expand the local research prompt preset with explicit guidance for factual, educational, medical, psychological, cultural, and legal discussion of adult and age-restricted topics.
+- Clarify that keywords such as “adult”, “pornography”, “sex”, and “nudity” must not trigger automatic refusal without interpreting the actual request.
+- Add the `profiles` directory to the npm package contents so the preset ships with the published package.
+- Document that this preset is a prompt template and is not automatically injected into DSH's primary chat-model requests by the current ModSearch plugin architecture.
+
+# Changelog
+
 ## 5.10.20 - 2026-11-27
 
 - Fix the floating traffic monitor close control: closing the expanded panel now returns to the compact desktop widget instead of leaving the panel open.
