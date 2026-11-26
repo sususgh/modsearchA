@@ -38,6 +38,11 @@ Hit a problem? [Open an issue](https://github.com/liustack/modsearch/issues/new/
 
 - **Traffic monitor:** after opening the traffic monitor from its icon, the panel currently cannot be closed. This is a known issue and has not yet been fixed.
 
+## API traffic monitor and edge endpoints
+
+- The dsh chat includes a draggable floating API traffic monitor for ModSearch web-search and page-fetch requests. It reports measured request counts, payload upload/download bytes, status success, and refreshes every two seconds. The compact widget position is remembered; closing the expanded panel returns to the compact widget.
+- A provider's `Base URL` can point to a trusted, provider-compatible edge proxy/CDN endpoint. Use an endpoint you operate or have vetted. Public free proxy nodes are not bundled: their uptime, privacy, and authorization cannot be guaranteed, and CDN caching does not speed up arbitrary uncached API POST requests.
+
 ## Features
 
 - **🥇 The strongest free web search plugin for DeepSeek Harness (dsh):** one command installs it, `npx -y @deepseek-ai/dsh plugin --profile web add @sususgh/modsearch-c@5.10.19`. In the desktop app's Add plugin dialog, enter `@sususgh/modsearch-c`, not the GitHub URL. Details in [harness setup](docs/harness-setup.md#deepseek-harness-dsh).
