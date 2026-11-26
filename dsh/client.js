@@ -110,7 +110,7 @@ window.__ModuleLoader__.load({
         section: '引擎设置',
         automatic: '自动（按故障转移顺序）',
         keylessSuffix: '（免注册免费）',
-        edgeHint: '仅填写你自己部署或可信、且兼容该服务商 API 协议的边缘代理地址。CDN 不会自动加速未缓存的 POST 请求。'
+        edgeHint: '仅填写你自己部署或可信、且兼容该服务商 API 协议的边缘代理地址。CDN 不会自动加速未缓存的 POST 请求。',
         pickToConfigure: '在上面选一个引擎，才能配置它的密钥和地址。',
         engine: '首选引擎',
         apiKey: 'API 密钥',
@@ -842,6 +842,7 @@ window.__ModuleLoader__.load({
                 ? hint(t.keylessTier, 'keyless-tier')
                 : null,
               canKey && draft.engine !== 'google' ? textField(t.baseUrl, 'baseURL', draft.engine === 'azure' ? 'Azure Foundry toolbox 的 HTTPS MCP URL' : t.endpointFallback) : null,
+              canKey && draft.engine !== 'google' ? hint(t.edgeHint, 'edge-endpoint-hint') : null,
               // Where the key is coming from, said once: a save cannot beat an
               // environment variable, and silence here would read as the save
               // having done nothing.
