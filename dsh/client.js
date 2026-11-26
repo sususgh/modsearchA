@@ -64,12 +64,13 @@ window.__ModuleLoader__.load({
         automatic: 'Automatic (chain order decides)',
         // The keyless default is stated in the list, where an engine is chosen.
         keylessSuffix: ' (keyless free tier)',
+        edgeHint: 'Use only an edge proxy you control or trust that is compatible with this provider API. A CDN does not automatically accelerate uncached POST requests.',
         pickToConfigure: 'Pick an engine above to configure its key and endpoint.',
         engine: 'Preferred engine',
         apiKey: 'API key',
         apiKeyHint:
           'Separate multiple keys with commas. ModSearch rotates to the next key after authentication, rate-limit, or quota failures.',
-        baseUrl: 'Base URL',
+        baseUrl: 'API / CDN-compatible edge endpoint',
         model: 'Model / Search Engine ID (cx)',
         stored: 'stored, leave empty to keep it',
         unset: 'not set',
@@ -109,11 +110,12 @@ window.__ModuleLoader__.load({
         section: '引擎设置',
         automatic: '自动（按故障转移顺序）',
         keylessSuffix: '（免注册免费）',
+        edgeHint: '仅填写你自己部署或可信、且兼容该服务商 API 协议的边缘代理地址。CDN 不会自动加速未缓存的 POST 请求。'
         pickToConfigure: '在上面选一个引擎，才能配置它的密钥和地址。',
         engine: '首选引擎',
         apiKey: 'API 密钥',
         apiKeyHint: '多个密钥用英文逗号分隔。鉴权、限流或配额失败时会自动轮换到下一个密钥。',
-        baseUrl: '接口地址',
+        baseUrl: 'API / CDN 兼容加速节点地址',
         model: '模型 / Google 搜索引擎 ID（cx）',
         stored: '已保存，留空即不改动',
         unset: '未设置',
@@ -1244,10 +1246,11 @@ window.__ModuleLoader__.load({
         box.innerHTML='<div class="panel"><div class="head"><b>◉ 实时 API 流量</b><button data-a="close">−</button></div><div class="body"><div class="grid"><div class="cell"><div class="lab">累计下载</div><div class="val">'+(data?fmt(data.downloadBytes):'读取中…')+'</div></div><div class="cell"><div class="lab">累计上传</div><div class="val">'+(data?fmt(data.uploadBytes):'读取中…')+'</div></div><div class="cell"><div class="lab">API 请求</div><div class="val">'+(data?data.requests||0:'—')+'</div></div><div class="cell"><div class="lab">成功率</div><div class="val">'+(data?((data.requests?(data.success||0)/data.requests:0)*100).toFixed(1)+'%':'—')+'</div></div></div><div class="foot"><span>每 2 秒刷新</span><a href="/modsearch/traffic">完整监控 ↗</a></div></div></div>';
       }
       function toggle(v){small=v;try{localStorage.setItem('modsearch-traffic-mini-collapsed',v?'1':'0');}catch(_){}draw();}
-      box.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-a]');if(b){toggle(b.getAttribute('data-a')!=='close');}else if(small)toggle(false);});
-      box.addEventListener('pointerdown',function(e){var h=e.target.closest&&e.target.closest('.pill,.head');if(!h||e.target.closest('button,a'))return;drag={x:e.clientX,y:e.clientY,r:parseFloat(host.style.right)||14,b:parseFloat(host.style.bottom)||88};});
-      box.addEventListener('pointermove',function(e){if(!drag)return;host.style.right=Math.max(0,drag.r-(e.clientX-drag.x))+'px';host.style.bottom=Math.max(0,drag.b-(e.clientY-drag.y))+'px';});
-      function end(){if(!drag)return;drag=null;try{localStorage.setItem('modsearch-traffic-mini-position',JSON.stringify({right:parseFloat(host.style.right)||14,bottom:parseFloat(host.style.bottom)||88}));}catch(_){}}
+      var wasDragged=false;
+      box.addEventListener('click',function(e){if(wasDragged){wasDragged=false;e.preventDefault();return;}var b=e.target.closest&&e.target.closest('[data-a]');if(b){toggle(b.getAttribute('data-a')==='close');}else if(small)toggle(false);});
+      box.addEventListener('pointerdown',function(e){var h=e.target.closest&&e.target.closest('.pill,.head');if(!h||e.target.closest('button,a'))return;wasDragged=false;drag={x:e.clientX,y:e.clientY,r:parseFloat(host.style.right)||14,b:parseFloat(host.style.bottom)||88,pointerId:e.pointerId,moved:false};try{box.setPointerCapture(e.pointerId);}catch(_){};});
+      box.addEventListener('pointermove',function(e){if(!drag|| (drag.pointerId!=null&&e.pointerId!==drag.pointerId))return;var dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(!drag.moved&&Math.hypot(dx,dy)<4)return;drag.moved=true;wasDragged=true;host.style.right=Math.max(0,drag.r-dx)+'px';host.style.bottom=Math.max(0,drag.b-dy)+'px';});
+      function end(e){if(!drag)return;var pointerId=drag.pointerId;drag=null;try{if(pointerId!=null&&box.hasPointerCapture(pointerId))box.releasePointerCapture(pointerId);}catch(_){}try{localStorage.setItem('modsearch-traffic-mini-position',JSON.stringify({right:parseFloat(host.style.right)||14,bottom:parseFloat(host.style.bottom)||88}));}catch(_){}}
       box.addEventListener('pointerup',end);box.addEventListener('pointercancel',end);
       document.body.appendChild(host);draw();
       var stopped=false;
