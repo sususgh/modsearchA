@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.10.19 - 2026-11-27
+
+- Known issue: the traffic-monitor icon opens the traffic panel, but the panel cannot currently be closed after opening. This issue is documented and remains unresolved in this version.
+
 ## 5.10.18 - 2026-11-24
 
 - Add a compact, persistent live API traffic monitor to the DeepSeek Harness chat, with expandable details, draggable placement, and remembered layout.
