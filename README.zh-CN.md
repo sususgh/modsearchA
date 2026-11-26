@@ -38,6 +38,11 @@ DeepSeek 和 GLM 等模型没有联网能力或联网能力羸弱。ModSearch �
 
 - **流量监控图标：** 点击图标打开流量监控面板后，目前无法关闭。该问题已确认并记录，当前版本尚未修复。
 
+## API 流量监控与边缘加速
+
+- dsh 聊天界面提供可拖动的悬浮 API 流量监控，统计 ModSearch 网页搜索和网页抓取请求的请求次数、实际上传/下载正文流量、状态码与成功情况，每 2 秒刷新。悬浮组件位置会记忆；关闭展开面板会回到桌面悬浮小图标。
+- 各服务商的「接口地址」可填写可信且兼容该服务商 API 协议的边缘代理/CDN 地址。请使用自己部署或经过核验的节点。项目不内置来源不明的公共免费代理节点：无法保证其可用性、隐私和授权；CDN 也不会自动加速所有未缓存的 API POST 请求。
+
 ## 特性
 
 - **🥇 全网最强的 DeepSeek Harness (dsh) 免费联网搜索插件：** 一条命令即刻安装 `npx -y @deepseek-ai/dsh plugin --profile web add @sususgh/modsearch-c@5.10.19`。桌面版「添加插件」里填 `@sususgh/modsearch-c`，不要填 GitHub 地址。细节见[接入指南](docs/harness-setup.zh-CN.md#deepseek-harness-dsh)。
