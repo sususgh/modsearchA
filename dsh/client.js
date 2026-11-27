@@ -448,6 +448,29 @@ window.__ModuleLoader__.load({
       var h = react.createElement;
       var Input = ui.Input;
 
+      // A restrained Paimon-inspired skin for this plugin's own settings area.
+      // It is deliberately scoped to the card and never changes DSH global styles.
+      function ensurePaimonTheme() {
+        if (typeof document !== 'object' || !document || !document.createElement || !document.head) return;
+        if (document.getElementById && document.getElementById('modsearch-paimon-theme')) return;
+        var style = document.createElement('style');
+        style.id = 'modsearch-paimon-theme';
+        style.textContent = [
+          '.modsearch-paimon-card{position:relative;color:#344b68!important;border:1px solid rgba(220,205,170,.72)!important;border-radius:18px!important;background:linear-gradient(145deg,rgba(255,253,246,.97),rgba(235,247,251,.96) 58%,rgba(246,240,252,.94))!important;box-shadow:0 12px 34px rgba(89,125,158,.12),inset 0 1px 0 #fff!important;overflow:hidden}',
+          '.modsearch-paimon-card:before{content:"✧  ✦  ⋆";position:absolute;right:18px;top:8px;color:rgba(193,157,91,.42);font-size:18px;letter-spacing:8px;pointer-events:none}',
+          '.modsearch-paimon-card h4{color:#536f91!important;font-weight:650!important;letter-spacing:.02em}',
+          '.modsearch-paimon-card input:not([type=checkbox]),.modsearch-paimon-card select,.modsearch-paimon-card textarea{border-color:#d9d4c6!important;border-radius:11px!important;background:rgba(255,255,251,.92)!important;color:#344b68!important;box-shadow:inset 0 1px 2px rgba(95,125,150,.05)!important}',
+          '.modsearch-paimon-card button{border-radius:11px!important;transition:filter .16s,transform .16s,box-shadow .16s!important}',
+          '.modsearch-paimon-card button:hover{filter:brightness(1.035);box-shadow:0 5px 14px rgba(116,161,190,.16)!important}',
+          '.modsearch-paimon-card a{color:#548eae!important}',
+          '.modsearch-paimon-card label{border-color:#e4ddcb!important;border-radius:12px!important;background:rgba(255,254,248,.78)!important}',
+          '.modsearch-paimon-card input[type=checkbox]{accent-color:#83b9d6}',
+          '.modsearch-paimon-card [role=status],.modsearch-paimon-card [aria-live]{color:#8b7b59}',
+          '@media(prefers-color-scheme:dark){.modsearch-paimon-card{color:#e8edf5!important;background:linear-gradient(145deg,rgba(38,51,70,.97),rgba(43,68,85,.96) 58%,rgba(59,51,79,.94))!important;border-color:rgba(184,166,126,.38)!important}.modsearch-paimon-card input:not([type=checkbox]),.modsearch-paimon-card select,.modsearch-paimon-card textarea{background:rgba(25,36,52,.9)!important;color:#edf4fa!important;border-color:#53677c!important}.modsearch-paimon-card h4{color:#d5e8f4!important}.modsearch-paimon-card label{background:rgba(255,255,255,.06)!important;border-color:rgba(205,194,163,.25)!important}}'
+        ].join('');
+        document.head.appendChild(style);
+      }
+
       // Built once per card so useSyncExternalStore is not handed a new
       // subscribe on every render, which would resubscribe every render.
       var subscribeLocale = (onChange) => {
@@ -491,6 +514,7 @@ window.__ModuleLoader__.load({
       // for the form on the bundle's page, 'summary' for a one-liner.
       // Settings on older hosts passes none and gets the collapsible card.
       return function ModsearchCard(props) {
+        ensurePaimonTheme();
         var view = props ? props.view : undefined;
         // Subscribed, not sampled: the language is a live setting, and a card
         // sitting open while the user switches has to follow. getSnapshot and
@@ -1136,7 +1160,7 @@ window.__ModuleLoader__.load({
           // one more section of the bundle's page.
           return h(
             'div',
-            null,
+            { className: 'modsearch-paimon-card' },
             h(
               'h4',
               {
@@ -1159,6 +1183,7 @@ window.__ModuleLoader__.load({
         return h(
           'div',
           {
+            className: 'modsearch-paimon-card',
             style: {
               border: '1px solid var(--dsw-alias-border-l2, rgba(127,127,127,0.35))',
               background: open
