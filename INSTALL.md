@@ -49,7 +49,7 @@ Then skip to the restart step after the commands.
 
 ```bash
 PROFILE="${DSH_PROFILE:-web}"   # or the profile the user named
-npx -y @deepseek-ai/dsh plugin --profile "$PROFILE" add @sususgh/modsearch-c@5.10.21
+npx -y @deepseek-ai/dsh plugin --profile "$PROFILE" add @sususgh/modsearch-c@5.10.22
 ```
 
 Keep the exact version. With `@latest`, pnpm's release-age filter can resolve
@@ -65,7 +65,7 @@ For either path, tell the user to quit and reopen dsh, then start a new
 conversation. The running session keeps its old tools until then. Search works keyless out of
 the box. To add engines or keys later, the user opens **Plugins** in the dsh
 sidebar and picks `@sususgh/modsearch-c`, or you run `config set` as in Step 3
-with `npx -y @sususgh/modsearch-c@5.10.21` in place of the launcher.
+with `npx -y @sususgh/modsearch-c@5.10.22` in place of the launcher.
 
 **If it fails:**
 - `declares no dsh.bundle` -> an older package was resolved. Re-run the `add`

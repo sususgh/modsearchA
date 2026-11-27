@@ -1,5 +1,10 @@
 # Changelog
 
+## 5.10.22 - 2026-11-27
+
+- Refresh the DSH settings card with a Paimon-inspired visual theme, including light and dark palettes.
+- Keep existing ModSearch configuration, search, and traffic-monitor behavior unchanged.
+
 ## 5.10.21 - 2026-11-27
 
 - Expand the local research prompt preset with explicit guidance for factual, educational, medical, psychological, cultural, and legal discussion of adult and age-restricted topics.
