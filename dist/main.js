@@ -4294,7 +4294,7 @@ function writeFully(stream, text) {
 const program = new Command();
 program.name("modsearch").description(
   "Plug-in web search and page fetch for models without native web access: query or URL in, structured JSON evidence out"
-).version("5.10.21");
+).version("5.10.22");
 program.command("search", { isDefault: true }).description("Search the web or X, or fetch a page (default command)").option("-q, --query <text>", "Search query (or answer focus when combined with -u)").option("-u, --url <url>", "Fetch this web page instead of searching").option("-o, --output <path>", "Write result JSON to a file").option(
   "-s, --source <list>",
   "Where to search: web, x, or web,x (default: web, or x when the query is about X)"
